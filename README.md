@@ -1,452 +1,355 @@
-# 🏠 AirBnb — Hotel & Room Booking Backend
+# 🏨 StaySphere — Hotel & Room Booking Backend
 
-A Spring Boot REST API for an Airbnb-style hotel and room booking platform.
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.3-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Spring Security](https://img.shields.io/badge/Spring%20Security-JWT-blue.svg)](https://spring.io/projects/spring-security)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-blue.svg)](https://www.postgresql.org/)
+[![Stripe](https://img.shields.io/badge/Stripe-Payments-6772e5.svg)](https://stripe.com/)
+[![OpenAPI](https://img.shields.io/badge/Swagger-OpenAPI%203-green.svg)](https://swagger.io/)
+[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE)
 
-The application supports user authentication, hotel/room management, inventory management, dynamic pricing, booking
-workflows, Stripe Checkout payments, webhook-based payment confirmation, cancellations/refunds, guest management, and
-hotel reporting.
+StaySphere is an enterprise-grade RESTful backend platform for hotel and room bookings built with **Java 25**, **Spring Boot 4.0.3**, **Spring Security with JWT**, **PostgreSQL**, and **Stripe Payments**.
 
-## ✨ Features
+Engineered with clean architecture, layered separation of concerns, and robust business workflows, StaySphere supports end-to-end guest reservation pipelines, dynamic pricing computation, real-time inventory allocation, automated Stripe Checkout with webhooks, role-based hotel administration, and analytics reporting.
 
-### Authentication & Authorization
+---
 
-- User registration and login
-- JWT-based stateless authentication
-- Access and refresh tokens
-- BCrypt password hashing
-- Role-based access for hotel managers
-- Protected user and admin endpoints
+## 👨‍💻 Author & Identity
 
-### Hotel & Room Management
+- **Project:** StaySphere — Hotel & Room Booking Backend
+- **Developer:** Shivam Vishwakarma
+- **GitHub:** [@shivam8761](https://github.com/shivam8761)
+- **Repository:** [https://github.com/shivam8761/staysphere](https://github.com/shivam8761/staysphere)
 
-- Create, update, activate/deactivate and delete hotels
-- Create, update and delete rooms
-- Browse hotel information
-- Search hotels
-- Hotel owner-specific booking access
+---
 
-### Inventory Management
+## 🌟 Core Features
 
-- Room inventory by date
-- Availability checks
-- Reservation locking
-- Inventory confirmation after successful payment
-- Inventory release during cancellation
+### 1. Authentication & Role-Based Authorization
+- **Stateless JWT Security:** Access tokens and secure HTTP-only refresh tokens.
+- **BCrypt Encryption:** Secure password hashing for user credentials.
+- **Role Enforcement:** Granular permissions (`ROLE_GUEST`, `ROLE_HOTEL_MANAGER`).
+- **Profile Management:** Authenticated endpoints to inspect and update user profile information and history.
 
-### Booking
+### 2. Hotel & Room Management
+- **Hotel Operations:** Create, update, activate/deactivate, and delete hotels (restricted to hotel managers).
+- **Room Types & Amenities:** Configure room capacities, base pricing, photos, and configurations.
+- **Ownership Scoping:** Hotel administrators can only manage and view bookings belonging to their properties.
 
-- Initialize a booking
-- Reserve inventory
-- Add guests to a booking
-- View booking status
-- View personal bookings
-- Cancel confirmed bookings
+### 3. Inventory Management & Locking
+- **Daily Room Inventory:** Date-partitioned inventory tracking room availability and surges.
+- **Atomic Reservation Locking:** Temporarily reserve capacity during booking checkout.
+- **Inventory Confirmation & Release:** Finalize room allocation upon payment confirmation or release inventory back on booking cancellation.
 
-### Dynamic Pricing
+### 4. Dynamic Pricing Engine (Decorator Pattern)
+StaySphere computes room rates dynamically based on multiple market conditions using a Strategy/Decorator pipeline:
+- **Base Pricing:** Standard room nightly rate.
+- **Surge Pricing:** Adjusted by daily surge multiplier.
+- **Occupancy Pricing:** Automatically increases price by 1.25x when capacity reaches or exceeds 80%.
+- **Urgency Pricing:** Applies a 1.5x multiplier for check-ins within 7 days.
+- **Holiday & Weekend Pricing:** Increases price by 1.25x for peak dates and weekends.
 
-The project uses a strategy/decorator-style pricing pipeline with:
+### 5. Booking Workflow
+- **Multi-Step Checkout:**
+  1. `Initialize Booking` — Verify dates and reserve room inventory.
+  2. `Add Guests` — Attach detailed guest information to reservation.
+  3. `Initiate Payment` — Generate Stripe Checkout Session.
+  4. `Webhook Confirmation` — Asynchronously confirm reservation upon Stripe event.
+- **Self-Service Cancellations:** Guests can cancel bookings with automatic inventory restitution and Stripe refund processing.
+- **Guest History:** Access personal booking records and real-time status.
 
-- Base pricing
-- Surge pricing
-- Occupancy-based pricing
-- Urgency pricing
-- Holiday pricing
+### 6. Stripe Payment & Webhook Integration
+- **Stripe Checkout Sessions:** Hosted payment page generation with embedded metadata.
+- **Cryptographic Webhook Verification:** Verifies `Stripe-Signature` header against webhook signing secret.
+- **Event Handling:** Processes `checkout.session.completed` events to atomically confirm bookings and capture transaction IDs.
+- **Automated Refunds:** Dispatches refund requests to Stripe API upon cancellation.
 
-### Stripe Payments
+### 7. Hotel Analytics & Reporting
+- **Revenue Metrics:** Generate date-range reports including confirmed booking counts, total revenue, and average revenue per booking.
 
-- Stripe Checkout Session creation
-- Booking ID stored as Stripe metadata
-- Payment-session ID stored against the booking
-- Stripe webhook endpoint
-- `checkout.session.completed` handling
-- Automatic booking confirmation after successful payment
-- Refund handling during cancellation
-
-### Reporting
-
-Hotel managers can generate reports containing:
-
-- Confirmed booking count
-- Total confirmed revenue
-- Average confirmed booking revenue
+---
 
 ## 🛠️ Tech Stack
 
-| Technology                  | Usage                          |
-|-----------------------------|--------------------------------|
-| Java 25                     | Backend language               |
-| Spring Boot 4.0.3           | Application framework          |
-| Spring MVC                  | REST APIs                      |
-| Spring Security             | Authentication & authorization |
-| JWT / JJWT                  | Token-based authentication     |
-| Spring Data JPA / Hibernate | Persistence                    |
-| PostgreSQL                  | Relational database            |
-| Stripe Java SDK             | Payments                       |
-| ModelMapper                 | DTO/entity mapping             |
-| Lombok                      | Boilerplate reduction          |
-| SpringDoc OpenAPI           | API documentation              |
-| Maven                       | Build & dependency management  |
+| Component | Technology | Version / Details |
+|---|---|---|
+| **Language** | Java | OpenJDK 25 |
+| **Framework** | Spring Boot | 4.0.3 |
+| **Web & REST** | Spring MVC | RESTful APIs with Global Exception Handling |
+| **Security** | Spring Security & JJWT | Stateless JWT (0.12.6) + BCrypt |
+| **Persistence** | Spring Data JPA / Hibernate | ORM with PostgreSQL driver |
+| **Database** | PostgreSQL / H2 | PostgreSQL 16+ (Production), H2 (In-memory testing) |
+| **Payments** | Stripe Java SDK | 33.5.0-alpha.2 (Checkout Sessions & Webhooks) |
+| **Mapping & Utils** | ModelMapper & Lombok | DTO conversions and boilerplate reduction |
+| **Documentation** | SpringDoc OpenAPI 3 | Swagger UI 3.1.0 |
+| **Build Tool** | Apache Maven | 3.9+ with Maven Wrapper |
 
-## 🏗️ Architecture
+---
 
-The backend follows a layered architecture:
+## 🏛️ System Architecture
 
 ```text
-Client
-  │
-  ▼
-Controller Layer
-  │
-  ▼
-Service Layer
-  │
-  ├── Pricing Strategy
-  ├── Booking Workflow
-  ├── Authentication
-  └── Stripe Checkout / Webhooks
-  │
-  ▼
-Repository Layer
-  │
-  ▼
-PostgreSQL
+                                  ┌─────────────────────────────┐
+                                  │      Client Applications    │
+                                  │ (Web / Mobile / Third-Party)│
+                                  └──────────────┬──────────────┘
+                                                 │ HTTPS / JSON
+                                                 ▼
+                                  ┌─────────────────────────────┐
+                                  │    Spring Security Filter   │
+                                  │  (JwtAuthFilter & CORS)     │
+                                  └──────────────┬──────────────┘
+                                                 │
+                   ┌─────────────────────────────┴─────────────────────────────┐
+                   ▼                                                           ▼
+     ┌───────────────────────────┐                               ┌───────────────────────────┐
+     │      Public & Guest       │                               │     Hotel Administration  │
+     │  (Auth, Browse, Bookings) │                               │  (Hotels, Rooms, Reports) │
+     └─────────────┬─────────────┘                               └─────────────┬─────────────┘
+                   │                                                           │
+                   └─────────────────────────────┬─────────────────────────────┘
+                                                 │
+                                                 ▼
+                                  ┌─────────────────────────────┐
+                                  │       Service Layer         │
+                                  │   (Business Logic & Rules)  │
+                                  └──────┬───────────────┬──────┘
+                                         │               │
+                     ┌───────────────────┘               └───────────────────┐
+                     ▼                                                       ▼
+      ┌─────────────────────────────┐                         ┌─────────────────────────────┐
+      │   Dynamic Pricing Pipeline  │                         │    Stripe Payment Service   │
+      │ (Base, Surge, Occupancy...) │                         │ (Checkout, Webhook, Refund) │
+      └─────────────────────────────┘                         └─────────────────────────────┘
+                     │                                                       │
+                     └───────────────────┬───────────────────────────────────┘
+                                         │
+                                         ▼
+                                  ┌─────────────────────────────┐
+                                  │   Spring Data Repositories  │
+                                  └──────────────┬──────────────┘
+                                                 │
+                                                 ▼
+                                  ┌─────────────────────────────┐
+                                  │      PostgreSQL Database    │
+                                  └─────────────────────────────┘
 ```
 
-### Main packages
+---
+
+## 📁 Project Structure
 
 ```text
-src/main/java/com/rohan/airBnb/
-├── Advices/       # Global API response & exception handling
-├── Config/        # Application, CORS and Stripe configuration
-├── controller/    # REST controllers
-├── dto/           # Request/response DTOs
-├── Entity/        # JPA entities and enums
-├── Exceptions/    # Custom exceptions
-├── Repository/    # Spring Data repositories
-├── security/      # JWT authentication and Spring Security
-├── Service/       # Business logic
-├── strategy/      # Dynamic pricing strategies
-└── utility/       # Shared application utilities
+staysphere/
+├── pom.xml                                   # Maven project dependencies & plugins
+├── README.md                                 # Comprehensive documentation
+├── .env.example                              # Template for environment variables
+├── src/
+│   ├── main/
+│   │   ├── java/com/shivam/airBnb/
+│   │   │   ├── StaySphereApplication.java    # Spring Boot bootstrap application
+│   │   │   ├── advice/                       # Global API response envelope & error handlers
+│   │   │   │   ├── ApiError.java
+│   │   │   │   ├── ApiResponse.java
+│   │   │   │   ├── GlobalAPIResponse.java
+│   │   │   │   └── GlobalExceptionHandler.java
+│   │   │   ├── config/                       # Application, CORS, Stripe, and OpenAPI configs
+│   │   │   │   ├── AppConfig.java
+│   │   │   │   ├── CorsConfig.java
+│   │   │   │   ├── OpenApiConfig.java
+│   │   │   │   └── StripeConfig.java
+│   │   │   ├── controller/                   # REST API Controllers
+│   │   │   │   ├── AuthController.java
+│   │   │   │   ├── HotelBookingController.java
+│   │   │   │   ├── HotelBrowseController.java
+│   │   │   │   ├── HotelController.java
+│   │   │   │   ├── InventoryController.java
+│   │   │   │   ├── RoomAdminController.java
+│   │   │   │   ├── UserController.java
+│   │   │   │   └── WebhookController.java
+│   │   │   ├── dto/                          # Data Transfer Objects
+│   │   │   ├── entity/                       # JPA Entities
+│   │   │   │   ├── Booking.java
+│   │   │   │   ├── Guest.java
+│   │   │   │   ├── Hotel.java
+│   │   │   │   ├── HotelContactInfo.java
+│   │   │   │   ├── HotelMinPrice.java
+│   │   │   │   ├── Inventory.java
+│   │   │   │   ├── Payment.java
+│   │   │   │   ├── Room.java
+│   │   │   │   ├── User.java
+│   │   │   │   └── enums/
+│   │   │   ├── exceptions/                   # Domain exceptions
+│   │   │   ├── repository/                   # Spring Data JPA repositories
+│   │   │   ├── security/                     # JWT tokens, filter, and security rules
+│   │   │   ├── service/                      # Business logic implementations
+│   │   │   ├── strategy/                     # Dynamic pricing strategies
+│   │   │   └── utility/                      # Helper utilities
+│   │   └── resources/
+│   │       └── application.properties        # Main runtime properties
+│   └── test/
+│       ├── java/com/shivam/airBnb/
+│       │   └── StaySphereApplicationTests.java
+│       └── resources/
+│           └── application.properties        # In-memory test configuration
 ```
 
-## 🔄 Booking & Payment Flow
+---
 
-```text
-1. User searches hotels
-        ↓
-2. User selects hotel + room + dates
-        ↓
-3. Booking is initialized
-        ↓
-4. Available inventory is locked/reserved
-        ↓
-5. Dynamic price is calculated
-        ↓
-6. Booking enters RESERVED state
-        ↓
-7. User starts payment
-        ↓
-8. Stripe Checkout Session is created
-        ↓
-9. User completes payment on Stripe
-        ↓
-10. Stripe sends webhook
-        ↓
-11. checkout.session.completed is processed
-        ↓
-12. Booking becomes CONFIRMED
-        ↓
-13. Reserved inventory becomes confirmed
+## 🔌 API Endpoints Summary
+
+Base Context Path: `/api/v1`
+
+### Authentication (`/auth`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/auth/signup` | Register a new user | Public |
+| `POST` | `/auth/login` | Login and obtain JWT access & refresh token | Public |
+| `POST` | `/auth/refresh` | Refresh access token using cookie | Public |
+
+### User Profile (`/users`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `GET` | `/users/myProfile` | View authenticated user details | Authenticated |
+| `PATCH` | `/users/profile` | Update profile information | Authenticated |
+| `GET` | `/users/myBookings` | View user's past and current bookings | Authenticated |
+
+### Hotel Browsing & Search (`/hotels`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `GET` | `/hotels/search` | Search hotels by city, date, and rooms | Public |
+| `GET` | `/hotels/{hotelId}/info` | Get hotel details and room rate list | Public |
+
+### Booking Lifecycle (`/bookings`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/bookings/init` | Initialize booking and reserve inventory | Authenticated |
+| `POST` | `/bookings/{bookingId}/addGuests` | Add guest list to booking | Authenticated |
+| `POST` | `/bookings/{bookingId}/payments` | Initiate Stripe checkout session | Authenticated |
+| `POST` | `/bookings/{bookingId}/cancel` | Cancel booking, release rooms, trigger refund | Authenticated |
+| `GET` | `/bookings/{bookingId}/status` | Check real-time booking status | Authenticated |
+
+### Hotel Administration (`/admin/hotels`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/admin/hotels` | Create new hotel | `HOTEL_MANAGER` |
+| `GET` | `/admin/hotels/{hotelId}` | Get hotel details | `HOTEL_MANAGER` |
+| `PUT` | `/admin/hotels/{hotelId}` | Update hotel details | `HOTEL_MANAGER` |
+| `DELETE` | `/admin/hotels/{hotelId}` | Delete hotel | `HOTEL_MANAGER` |
+| `PATCH` | `/admin/hotels/{hotelId}` | Activate/Deactivate hotel | `HOTEL_MANAGER` |
+| `GET` | `/admin/hotels/{hotelId}/bookings` | View hotel bookings | `HOTEL_MANAGER` |
+| `GET` | `/admin/hotels/{hotelId}/reports` | Revenue and bookings report | `HOTEL_MANAGER` |
+
+### Room Administration (`/admin/hotels/{hotelId}/rooms`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/admin/hotels/{hotelId}/rooms` | Create new room type | `HOTEL_MANAGER` |
+| `GET` | `/admin/hotels/{hotelId}/rooms` | List hotel rooms | `HOTEL_MANAGER` |
+| `GET` | `/admin/hotels/{hotelId}/rooms/{roomId}` | Get room details | `HOTEL_MANAGER` |
+| `DELETE` | `/admin/hotels/{hotelId}/rooms/{roomId}` | Delete room type | `HOTEL_MANAGER` |
+
+### Inventory Administration (`/admin/inventory`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `GET` | `/admin/inventory/rooms/{roomId}` | Fetch room inventory dates | `HOTEL_MANAGER` |
+| `PATCH` | `/admin/inventory/rooms/{roomId}` | Update capacity/surge factor | `HOTEL_MANAGER` |
+
+### Stripe Webhook (`/webhook`)
+| Method | Endpoint | Description | Access |
+|---|---|---|---|
+| `POST` | `/webhook` | Stripe webhook listener for payment events | Public (Stripe Signature) |
+
+---
+
+## 📖 Swagger & OpenAPI
+
+Interactive API documentation and schema explorer are provided by SpringDoc OpenAPI.
+
+- **Swagger UI:** `http://localhost:8080/api/v1/swagger-ui/index.html`
+- **OpenAPI JSON Spec:** `http://localhost:8080/api/v1/v3/api-docs`
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the project root based on `.env.example`:
+
+```properties
+# PostgreSQL Database Configuration
+DB_URL=jdbc:postgresql://localhost:5432/staysphere
+DB_USERNAME=postgres
+DB_PASSWORD=your_secure_password
+
+# JWT Security
+# Generate a secure 256-bit or 512-bit secret
+JWT_SECRET_KEY=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+
+# Frontend Integration
+FRONTEND_URL=http://localhost:3000
+
+# Stripe Payment Keys (Test or Live)
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_stripe_webhook_signing_secret
 ```
 
-### Payment states
+---
 
-The booking workflow includes states such as:
+## 🚀 Local Setup & Installation
 
-```text
-RESERVED
-   ↓
-GUESTS_ADDED
-   ↓
-PAYMENTS_PENDING
-   ↓
-CONFIRMED
-   ↓
-CANCELLED
-```
+### Prerequisites
+- **JDK 25** (or compatible modern OpenJDK)
+- **Apache Maven 3.9+** (or bundled `./mvnw`)
+- **PostgreSQL 16+**
 
-## 🔐 Authentication Flow
-
-```text
-Sign Up
-  ↓
-Login
-  ↓
-JWT Access Token + Refresh Token
-  ↓
-Authorization Header
-  ↓
-JwtAuthFilter
-  ↓
-Spring Security Context
-  ↓
-Protected Controller
-```
-
-Send the access token as:
-
-```http
-Authorization: Bearer <access-token>
-```
-
-## 📌 API Endpoints
-
-Base URL:
-
-```text
-http://localhost:8080/api/v1
-```
-
-### Authentication
-
-| Method | Endpoint        | Purpose       |
-|--------|-----------------|---------------|
-| POST   | `/auth/signUp`  | Register user |
-| POST   | `/auth/login`   | Login         |
-| POST   | `/auth/refresh` | Refresh token |
-
-### Hotel browsing
-
-| Method | Endpoint                 | Purpose               |
-|--------|--------------------------|-----------------------|
-| GET    | `/hotels/search`         | Search hotels         |
-| GET    | `/hotels/{hotelId}/info` | Get hotel information |
-
-### Booking
-
-| Method | Endpoint                         | Purpose              |
-|--------|----------------------------------|----------------------|
-| POST   | `/booking/init`                  | Initialize booking   |
-| POST   | `/booking/{bookingId}/addGuests` | Add guests           |
-| POST   | `/booking/{bookingId}/payments`  | Start Stripe payment |
-| POST   | `/booking/{bookingId}/cancel`    | Cancel booking       |
-| GET    | `/booking/{bookingId}/status`    | Get booking status   |
-
-### Users
-
-| Method | Endpoint                  | Purpose             |
-|--------|---------------------------|---------------------|
-| PATCH  | `/users/profile`          | Update profile      |
-| GET    | `/users/profile`          | Get profile         |
-| GET    | `/users/myBookings`       | Get user's bookings |
-| GET    | `/users/guests`           | List guests         |
-| POST   | `/users/guests`           | Add guest           |
-| PUT    | `/users/guests/{guestId}` | Update guest        |
-| DELETE | `/users/guests/{guestId}` | Delete guest        |
-
-### Hotel administration
-
-| Method | Endpoint                           | Purpose             |
-|--------|------------------------------------|---------------------|
-| POST   | `/admin/hotels`                    | Create hotel        |
-| GET    | `/admin/hotels`                    | List managed hotels |
-| GET    | `/admin/hotels/{hotelId}`          | Get hotel           |
-| PUT    | `/admin/hotels/{hotelId}`          | Update hotel        |
-| DELETE | `/admin/hotels/{hotelId}`          | Delete hotel        |
-| PATCH  | `/admin/hotels/active/{hotelId}`   | Activate hotel      |
-| PATCH  | `/admin/hotels/deactive/{hotelId}` | Deactivate hotel    |
-| GET    | `/admin/hotels/{hotelId}/bookings` | Hotel bookings      |
-| GET    | `/admin/hotels/{hotelId}/reports`  | Hotel report        |
-
-### Rooms & inventory
-
-| Method | Endpoint                                 | Purpose          |
-|--------|------------------------------------------|------------------|
-| POST   | `/admin/hotels/{hotelId}/rooms`          | Create room      |
-| GET    | `/admin/hotels/{hotelId}/rooms`          | List rooms       |
-| GET    | `/admin/hotels/{hotelId}/rooms/{Roomid}` | Get room         |
-| PUT    | `/admin/hotels/{hotelId}/rooms/{Roomid}` | Update room      |
-| DELETE | `/admin/hotels/{hotelId}/rooms/{roomId}` | Delete room      |
-| GET    | `/admin/inventory/rooms/{roomId}`        | Get inventory    |
-| PATCH  | `/admin/inventory/rooms/{roomId}`        | Update inventory |
-
-### Stripe webhook
-
-| Method | Endpoint           | Purpose                       |
-|--------|--------------------|-------------------------------|
-| POST   | `/webhook/payment` | Receive Stripe payment events |
-
-## 💳 Stripe Webhook Setup
-
-For local development, Stripe needs a public/reachable webhook endpoint.
-
-The application endpoint is:
-
-```text
-POST http://localhost:8080/api/v1/webhook/payment
-```
-
-When using Stripe CLI, forward events to:
-
+### Step 1: Clone Repository
 ```bash
-stripe listen --forward-to localhost:8080/api/v1/webhook/payment
+git clone https://github.com/shivam8761/staysphere.git
+cd staysphere
 ```
 
-Use the webhook signing secret printed by Stripe CLI as:
-
-```text
-STRIPE_WEBHOOK_SECRET=whsec_...
-```
-
-Do **not** commit the signing secret to GitHub.
-
-## 🚀 Getting Started
-
-### 1. Prerequisites
-
-Install:
-
-- Java 25
-- Maven (or use the included Maven wrapper)
-- PostgreSQL
-- Stripe account / Stripe CLI for payment testing
-
-### 2. Create the database
-
-Create a PostgreSQL database:
-
+### Step 2: Configure Database
+Open PostgreSQL terminal or pgAdmin:
 ```sql
-CREATE
-DATABASE "airBnb";
+CREATE DATABASE staysphere;
 ```
 
-### 3. Configure environment variables
-
-Copy the example configuration:
+### Step 3: Run the Application
+You can pass environment variables inline or via `.env`:
 
 ```bash
-cp .env.example .env
-```
+export DB_URL="jdbc:postgresql://localhost:5432/staysphere"
+export DB_USERNAME="postgres"
+export DB_PASSWORD="your_password"
+export JWT_SECRET_KEY="your_jwt_secret"
+export STRIPE_SECRET_KEY="sk_test_xxx"
+export STRIPE_WEBHOOK_SECRET="whsec_xxx"
 
-Then set your actual values.
-
-If your IDE does not automatically load `.env`, configure these variables in your run configuration:
-
-```text
-DB_URL
-DB_USERNAME
-DB_PASSWORD
-JWT_SECRET_KEY
-FRONTEND_URL
-STRIPE_SECRET_KEY
-STRIPE_WEBHOOK_SECRET
-```
-
-### 4. Run the application
-
-Linux/macOS:
-
-```bash
 ./mvnw spring-boot:run
 ```
 
-Windows:
+The application will start on port `8080` under context path `/api/v1`.
 
-```powershell
-.\mvnw.cmd spring-boot:run
-```
-
-Or run:
-
-```text
-AirBnbApplication.java
-```
-
-from IntelliJ IDEA.
-
-The API will be available at:
-
-```text
-http://localhost:8080/api/v1
-```
-
-## 📚 API Documentation
-
-SpringDoc/OpenAPI is included in the project.
-
-After starting the application, Swagger UI is normally available at:
-
-```text
-http://localhost:8080/api/v1/swagger-ui/index.html
-```
-
-OpenAPI JSON:
-
-```text
-http://localhost:8080/api/v1/v3/api-docs
-```
-
-## 🧪 Testing
-
-Run the test suite with:
+### Step 4: Run Tests
+The test suite utilizes an isolated in-memory H2 database and runs with zero external dependencies:
 
 ```bash
-./mvnw test
+./mvnw clean test
 ```
 
-Windows:
+---
 
-```powershell
-.\mvnw.cmd test
-```
+## 🔮 Future Improvements
 
-## 🗄️ Database
+- [ ] Multi-image file upload via AWS S3 or Cloudinary.
+- [ ] Guest reviews, ratings, and moderation system.
+- [ ] User wishlist and favorite hotels feature.
+- [ ] Redis caching for hotel search queries and pricing calculation.
+- [ ] Asynchronous email notifications with Spring Mail and Thymeleaf templates.
+- [ ] Docker Compose setup for instant one-command local orchestration.
+- [ ] Database migration versioning with Flyway or Liquibase.
 
-The application uses PostgreSQL with Spring Data JPA.
+---
 
-The main domain entities include:
+## 📄 License
 
-```text
-User
- ├── Guest
- ├── Hotel
- │    ├── Room
- │    │    └── Inventory
- │    └── Bookings
- └── Bookings
-
-Booking
- ├── User
- ├── Hotel
- ├── Room
- ├── Guests
- └── Payment information
-
-```
-
-
-
-## 📈 Possible Future Improvements
-
-- Property image upload
-- Reviews and ratings
-- Wishlist/favorites
-- Advanced hotel filtering
-- Email/SMS booking notifications
-- Redis caching
-- Kafka/event-driven booking events
-- Docker + Docker Compose
-- CI/CD with GitHub Actions
-- Flyway/Liquibase migrations
-- Testcontainers integration tests
-- Production observability with metrics and tracing
-
-```
-
-## 👨‍💻 Author
-
-**Rohan Singh**
-
-Built as a backend-focused Airbnb-style hotel booking project using Spring Boot, PostgreSQL, JWT authentication and
-Stripe payments.
-
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
