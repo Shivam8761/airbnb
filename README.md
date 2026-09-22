@@ -1,4 +1,4 @@
-# 🏨 StaySphere — Hotel & Room Booking Backend
+# 🏨 airbnb — Hotel & Room Booking Backend
 
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.3-brightgreen.svg)](https://spring.io/projects/spring-boot)
@@ -8,7 +8,7 @@
 [![OpenAPI](https://img.shields.io/badge/Swagger-OpenAPI%203-green.svg)](https://swagger.io/)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE)
 
-StaySphere is an enterprise-grade RESTful backend platform for hotel and room bookings built with **Java 25**, **Spring Boot 4.0.3**, **Spring Security with JWT**, **PostgreSQL**, and **Stripe Payments**.
+airbnb is an enterprise-grade RESTful backend platform for hotel and room bookings built with **Java 25**, **Spring Boot 4.0.3**, **Spring Security with JWT**, **PostgreSQL**, and **Stripe Payments**.
 
 Engineered with clean architecture, layered separation of concerns, and robust business workflows, StaySphere supports end-to-end guest reservation pipelines, dynamic pricing computation, real-time inventory allocation, automated Stripe Checkout with webhooks, role-based hotel administration, and analytics reporting.
 
